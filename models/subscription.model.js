@@ -63,8 +63,11 @@ const subscriptionSchema= new mongoose.Schema({
     }
 }, {timestamps:true});
 
-subscriptionSchema.pre('save',function(next){
-    if(!this.renewableDate){
+// Prevent duplicate subscriptions: same user can't subscribe to the same name twice
+subscriptionSchema.index({ name: 1, user: 1 }, { unique: true });
+
+subscriptionSchema.pre('save',function(){
+    if(!this.renewalDate){
         const renewablePeriods={
             daily: 1,
             weekly:7,
@@ -77,7 +80,6 @@ subscriptionSchema.pre('save',function(next){
     if(this.renewalDate< new Date()){
         this.status= 'expired';
     }
-    next();
 });
 
 const Subscription = mongoose.model('Subscription',subscriptionSchema);

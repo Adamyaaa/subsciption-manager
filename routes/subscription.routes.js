@@ -1,22 +1,26 @@
 import { Router } from 'express';
+import { authorize } from '../middlewares/auth.middleware.js';
+import { createSubscription, getUserSubscriptions } from '../config/controllers/subscription.controller.js';
 
 const subscriptionRouter = Router();
 
-subscriptionRouter.get('/',(req,res)=>res.send({title:'get all subscription'}));
+// Specific routes FIRST (before /:id wildcard)
+subscriptionRouter.get('/', (req, res) => res.send({ title: 'get all subscription' }));
 
-subscriptionRouter.get('/:id',(req,res)=>res.send({title:'get subscription details'}));
+subscriptionRouter.get('/upcoming-renewals', (req, res) => res.send({ title: 'get upcoming renewals' }));
 
-subscriptionRouter.post('/',(req,res)=>res.send({title:'create subscription'}));
+subscriptionRouter.get('/user/:id', authorize, getUserSubscriptions);
 
-subscriptionRouter.put('/:id',(req,res)=>res.send({title:'update subscription'}));
+subscriptionRouter.post('/', authorize, createSubscription);
 
-subscriptionRouter.delete('/:id',(req,res)=>res.send({title:'delete subscription'}));
+// Wildcard routes AFTER specific ones
+subscriptionRouter.get('/:id', (req, res) => res.send({ title: 'get subscription details' }));
 
-subscriptionRouter.get('/user/:id',(req,res)=>res.send({title:'get all users subscription'}));
+subscriptionRouter.put('/:id', (req, res) => res.send({ title: 'update subscription' }));
 
-subscriptionRouter.put('/:id/cancel',(req,res)=>res.send({title:'cancel subscription'}));
+subscriptionRouter.delete('/:id', (req, res) => res.send({ title: 'delete subscription' }));
 
-subscriptionRouter.get('/upcoming-renewals',(req,res)=>res.send({title:'get upcoming renewals'}));
+subscriptionRouter.put('/:id/cancel', (req, res) => res.send({ title: 'cancel subscription' }));
 
 
 export default subscriptionRouter;
